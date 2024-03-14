@@ -389,4 +389,19 @@
 
 ## Посилання
 
-*[Розділ містить повний список всіх документів, про які згадується.]*
+ - [Проєкт](https://worksection.com/ua/blog/basic-project-management-principles-for-absolute-beginners.html)
+ - [Система управління проєктами](https://worksection.com/ua/blog/basic-project-management-principles-for-absolute-beginners.html)
+ - [Структура проєкту](https://worksection.com/ua/blog/basic-project-management-principles-for-absolute-beginners.html)
+ - [Процес](https://worksection.com/ua/blog/basic-project-management-principles-for-absolute-beginners.html)
+ - [Артефакт](https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%82%D0%B5%D1%84%D0%B0%D0%BA%D1%82_(UML))
+ - [Scrum](https://career.softserveinc.com/uk-ua/stories/what-is-scrum-methodology)
+ - [Життєвий цикл](https://qalight.ua/baza-znaniy/zhittyevij-tsikl-pz/)
+ - [Agile Model](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Waterfall model](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [V-подібна модель](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Інкрементна модель](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Спіральна модель](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Гнучка модель](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Гнучка модель](https://training.qatestlab.com/blog/technical-articles/popular-software-development-life-cycles/)
+ - [Kanban](https://www.ukraine.com.ua/uk/blog/interesting/chto-takoe-kanban.html)
+ - [CRM](https://www.creatio.com/ua/crm/what-is-crm)
