@@ -11,9 +11,9 @@ footer: "ECL 2.0 Licensed | Copyright © [2024] [Danylo Zakrevskyi]"
 
 *студенти 2-го курсу, групи ІО-24*<span padding-right:5em></span> 
 
-**Данило Закревський [Telegram](https://t.me/Mayfff)**
+**Закревський Данило [Telegram](https://t.me/Mayfff)**
 
-**Тарас Бондаренко [Telegram](https://t.me/HTMLxAcKeR)**
+**Бондаренко Тарас [Telegram](https://t.me/HTMLxAcKeR)**
 
 **Гайдукевич Олександра [Telegram](https://t.me/sashka_gd)**
 
