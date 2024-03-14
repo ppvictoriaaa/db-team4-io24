@@ -15,7 +15,7 @@ module.exports = {
     }]
   ],
   port: 3030,
-  base: '/docs/',
+  base: '/db-team4-io24/',
   theme: 'cool',
   // dest: 'dist',
   head: [
@@ -76,7 +76,7 @@ module.exports = {
 
     lastUpdated: 'Останнє оновлення', // string | boolean
       // Assumes GitHub. Can also be a full GitLab url.
-    repo: 'https://github.com/boldak/edu-db-cw',
+    repo: 'https://github.com/mayfff/db-team4-io24',
     // Customising the header label
     // Defaults to "GitHub"/"GitLab"/"Bitbucket" depending on `themeConfig.repo`
     repoLabel: 'Github',
@@ -95,8 +95,8 @@ module.exports = {
     // editLinkText: 'Ви можете покращити цю сторінку'
 
   },
-  title: 'Назва проєкту',
-  description: 'Курсова робота з дисципліни "Бази даних"',
+  title: '4. Система управління проектами',
+  description: 'Проектна робота з дисципліни "Організація баз даних"',
   configureWebpack: {
     resolve: {
       alias: {
