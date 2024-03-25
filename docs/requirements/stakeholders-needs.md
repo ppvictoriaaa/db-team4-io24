@@ -15,7 +15,7 @@
 
 ### Основні визначення та скорочення
 
-**[Стейкхолдер проєкту](https://wizeclub.education/blog/stejkholderi-proyektu-hto-taki-ta-chomu-vazhlivo-nalagoditi-z-nimi-komunikatsiyu/)** — це зацікавлена в проєкті особа чи сторона, що має до нього будь-який стосунок. До зацікавлених осіб належать: команда проєкту, інвестори, клієнти, тощо.
+**[Стейкхолдер проєкту](https://wizeclub.education/blog/stejkholderi-proyektu-hto-taki-ta-chomu-vazhlivo-nalagoditi-z-nimi-komunikatsiyu/)** — це зацікавлена в проєкті особа чи сторона, що має до нього якесь відношення. До зацікавлених осіб належать: команда проєкту, інвестори, клієнти, тощо.
 
 **[Бізнес-актори](https://ebrary.net/73275/computer_science/business_actors_business_workers)** - це люди, організації або навіть системи, які виконують певну діяльність, що належить до процесу, але не є частиною цільової компанії. Тобто вони непідконтрольні компанії.
 
