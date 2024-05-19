@@ -126,3 +126,5 @@ Project "1,1" -- "0,*" Task
 @enduml
 
 ## Реляційна схема
+
+![relational_scheme](./relationalSchema.png)
