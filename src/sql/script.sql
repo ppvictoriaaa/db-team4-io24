@@ -148,7 +148,102 @@ CREATE TABLE IF NOT EXISTS `db-io24-team4`.`task` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`role`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `db-io24-team4`;
+INSERT INTO `db-io24-team4`.`role` (`id`, `name`) VALUES (1, `ProjectOwner`);
+INSERT INTO `db-io24-team4`.`role` (`id`, `name`) VALUES (2, `Developer`);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`permission`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `db-io24-team4`;
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (1, `create_task`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (2, `delete_task`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (3, `change_task_description`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (4, `change_project_description`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (5, `add_user`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (6, `delete_user`);
+INSERT INTO `db-io24-team4`.`permission` (`id`, `name`) VALUES (7, `delete_project`);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`grant`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `db-io24-team4`;
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (1, 1, 1);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (2, 1, 2);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (3, 1, 3);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (4, 1, 4);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (5, 1, 5);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (6, 1, 6);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (7, 1, 7);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (8, 2, 1);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (9, 2, 2);
+INSERT INTO `db-io24-team4`.`grant` (`id`, `role_id`, `permission_id`) VALUES (10, 2, 3);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`user`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `db-io24-team4`;
+INSERT INTO `db-io24-team4`.`user` (`id`, `email`, `nickname`, `password`) VALUES (1, `yellowmonkey@gmail.com`, `yellowmonkey`, `Bws3YXQ8`);
+INSERT INTO `db-io24-team4`.`user` (`id`, `email`, `nickname`, `password`) VALUES (2, `wonderful@gmail.com`, `w0nderful`, `NW4Xzm4h`);
+INSERT INTO `db-io24-team4`.`user` (`id`, `email`, `nickname`, `password`) VALUES (3, `denysholovin03@gmail.com`, `holovin.d`, `sDnGtCiN`);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`member`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE 'db-io24-tean4';
+INSERT INTO `db-io24-team4`.`member` (`id`, `user_id`, `role_id`) VALUES (1, 1, 1)
+INSERT INTO `db-io24-team4`.`member` (`id`, `user_id`, `role_id`) VALUES (2, 2, 2)
+INSERT INTO `db-io24-team4`.`member` (`id`, `user_id`, `role_id`) VALUES (3, 3, 2)
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`project_member`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE 'db-io24-tean4';
+INSERT INTO `db-io24-team4`.`project_member` (`id`, `member_id`, `project_id`) VALUES (1, 1, 1)
+INSERT INTO `db-io24-team4`.`project_member` (`id`, `member_id`, `project_id`) VALUES (2, 2, 1)
+INSERT INTO `db-io24-team4`.`project_member` (`id`, `member_id`, `project_id`) VALUES (3, 3, 1)
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`project`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE 'db-io24-tean4';
+INSERT INTO `db-io24-team4`.`project` (`id`, `name`, `description`) VALUES (1, `course work`, `Our course work`)
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `db-io24-team4`.`task`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE 'db-io24-tean4';
+INSERT INTO `db-io24-team4`.`task` (`id`, `name`, `description`, `isCompleted`, `project_id`) VALUES (1, `Frontend`, `Frontend part`, 0, 1)
+INSERT INTO `db-io24-team4`.`task` (`id`, `name`, `description`, `isCompleted`, `project_id`) VALUES (2, `Backend`, `Backend part`, 0, 1)
+
+COMMIT;
