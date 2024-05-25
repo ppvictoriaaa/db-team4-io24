@@ -598,7 +598,7 @@ import { Role } from "./roles/roles.model";
       port: 5432,
       username: "postgres",
       password: "root",
-      database: "Lab_6_not_my",
+      database: "Lab_6",
       models: [User, Role],
       synchronize: true,
       autoLoadModels: true,

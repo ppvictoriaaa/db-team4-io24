@@ -6,7 +6,7 @@ actionLink: /intro/
 footer: "ECL 2.0 Licensed | Copyright © [2024] [Danylo Zakrevskyi]"
 ---
 
-**Виконав:**
+**Виконала:**
 
 _студентка 2-го курсу, групи ІО-24_<span padding-right:5em></span>
 
