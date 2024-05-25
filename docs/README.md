@@ -6,16 +6,15 @@ actionLink: /intro/
 footer: "ECL 2.0 Licensed | Copyright © [2024] [Danylo Zakrevskyi]"
 ---
 
+**Виконав:**
 
-**Виконав:** 
+_студентка 2-го курсу, групи ІО-24_<span padding-right:5em></span>
 
-*студент 2-го курсу, групи ІО-24*<span padding-right:5em></span> 
-
-**Закревський Данило [Telegram](https://t.me/Mayfff)**
+**Пекур Вікторія [Telegram](https://t.me/ppvikaaa)**
 
 **Керівник**
 
-*доцент кафедри ОТ ФІОТ, к.т.н., доцент*<span padding-right:5em></span> **Андрій БОЛДАК** 
+_доцент кафедри ОТ ФІОТ, к.т.н., доцент_<span padding-right:5em></span> **Андрій БОЛДАК**
 
 [НТУУ "КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ імені ІГОРЯ СІКОРСЬКОГО](https://kpi.ua/)
 

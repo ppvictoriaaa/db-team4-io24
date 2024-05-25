@@ -1,0 +1,3 @@
+interface CreateRoleDto {
+    title: string
+}

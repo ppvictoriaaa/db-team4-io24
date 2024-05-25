@@ -1,6 +1,7 @@
 # Реалізація інформаційного та програмного забезпечення
 
 ## SQL-скрипт для створення на початкового наповнення бази даних
+
 ```sql
 -- MySQL Workbench Forward Engineering
 
@@ -253,508 +254,360 @@ INSERT INTO `db-io24-team4`.`task` (`id`, `name`, `description`, `isCompleted`, 
 COMMIT;
 ```
 
-## RESTfull сервіс для управління даними
-Цей RESTfull сервіс розроблений із застосуванням Spring Framework, який забезпечує потужну підтримку для створення веб-додатків та сервісів. Основними компонентами є:
+## RESTfull сервіс
 
-- Spring Boot - спрощує конфігурацію та розгортання додатку, забезпечуючи вбудовану підтримку серверів застосунків.
-- Spring Data JPA - використовується для взаємодії з базами даних через Java Persistence API (JPA). Він дозволяє легко створювати репозиторії для роботи з даними, автоматизуючи більшість CRUD операцій, що полегшує роботу з базою даних.
+### Role Model
 
-## Entity
+```typescript
+import { Column, DataType, Model, Table } from "sequelize-typescript";
 
-### Role
+@Table
+export class Role extends Model {
+  @Column({ unique: true, primaryKey: true, autoIncrement: true })
+  id: number;
 
-```java
-package db.lab6.entity;
-
-import jakarta.persistence.*;
-import lombok.Data;
-
-
-@Data
-@Table(name = "role")
-@Entity
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String name;
+  @Column({ type: DataType.STRING })
+  title: string;
 }
 ```
 
-### Permission
+### Role Service
 
-```java
-package db.lab6.entity;
+```typescript
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { Role } from "./roles.model";
 
-import jakarta.persistence.*;
-import lombok.Data;
+@Injectable()
+export class RolesService {
+  constructor(@InjectModel(Role) private roleRepository: typeof Role) {}
 
-@Entity
-@Table(name = "permission")
-@Data
-public class Permission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long id;
+  async createRole(title: string) {
+    const existRole = await this.roleRepository.findOne({ where: { title } });
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    if (existRole) {
+      return existRole;
+    }
+
+    return await this.roleRepository.create({
+      title,
+    });
+  }
+
+  async updateRole(id: number, title: string) {
+    const existRole = await this.roleRepository.findOne({ where: { id } });
+    const existRoleEr = await this.roleRepository.findOne({ where: { title } });
+
+    if (!existRole) {
+      throw new NotFoundException("This role not found!");
+    }
+
+    if (existRoleEr) {
+      throw new BadRequestException("This role is exist!");
+    }
+
+    existRole.set("title", title);
+
+    return await existRole.save();
+  }
+
+  async deleteRole(id: number) {
+    const existRole = await this.roleRepository.findOne({ where: { id } });
+
+    if (!existRole) {
+      throw new NotFoundException("This role not found!");
+    }
+    await existRole.destroy();
+
+    return `${existRole.title} has been deleted`;
+  }
+
+  async getRole(title: string) {
+    const existRole = await this.roleRepository.findOne({ where: { title } });
+
+    return existRole;
+  }
 }
 ```
 
-### Grant
+### Role Controller
 
-```java
-package db.lab6.entity;
+```typescript
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { Role } from "./roles.model";
+import { RolesService } from "./roles.service";
 
-import jakarta.persistence.*;
-import lombok.Data;
+@Controller("roles")
+export class RolesController {
+  constructor(private rolesService: RolesService) {}
 
-@Entity
-@Table(name = "grants")
-@Data
-public class Grant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long id;
+  @Post("/create-role")
+  createRole(@Body() newRole: CreateRoleDto) {
+    return this.rolesService.createRole(newRole.title);
+  }
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+  @Patch("/update-role")
+  updateUser(@Body() newRole: UpdateRoleDto) {
+    return this.rolesService.updateRole(newRole.id, newRole.title);
+  }
 
-    @ManyToOne
-    @JoinColumn(name = "permission_id", nullable = false)
-    private Permission permission;
+  @Delete("/delete/:id")
+  deleteUser(@Param("id") id: string) {
+    return this.rolesService.deleteRole(+id);
+  }
+
+  @Get(":title")
+  getUser(@Param("title") title: string) {
+    return this.rolesService.getRole(title);
+  }
 }
 ```
 
-## DTO
+### Role Module
 
-### RoleDTO
+```typescript
+import { Module } from "@nestjs/common";
+import { RolesService } from "./roles.service";
+import { RolesController } from "./roles.controller";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { Role } from "./roles.model";
 
-```java
-package db.lab6.dto;
+@Module({
+  imports: [SequelizeModule.forFeature([Role])],
+  providers: [RolesService],
+  controllers: [RolesController],
+  exports: [RolesService],
+})
+export class RolesModule {}
+```
 
-import lombok.Data;
+### User Model
 
-@Data
-public class RoleDTO {
-    private String name;
+```typescript
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from "sequelize-typescript";
+import { Role } from "src/roles/roles.model";
+
+@Table
+export class User extends Model {
+  @Column({ unique: true, primaryKey: true, autoIncrement: true })
+  id: number;
+
+  @Column({ type: DataType.STRING })
+  email: string;
+
+  @Column({ type: DataType.STRING })
+  username: string;
+
+  @Column({ type: DataType.STRING })
+  password: string;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  roleId: number;
 }
 ```
 
-### PermissionDTO
+### User Service
 
-```java
-package db.lab6.dto;
+```typescript
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { User } from "./user.model";
+import { CreateUserDto } from "./create-user.dto";
+import { RolesService } from "src/roles/roles.service";
+import { UpdateUserDto } from "./update-user.dto";
 
-import lombok.Data;
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    private rolesService: RolesService
+  ) {}
 
-@Data
-public class PermissionDTO {
-    private String name;
+  async createUser(newUser: CreateUserDto): Promise<User> {
+    const existUser = await this.userRepository.findOne({
+      where: {
+        email: newUser.email,
+      },
+    });
+
+    if (existUser) {
+      throw new BadRequestException("This user is exist");
+    }
+
+    let existRole = await this.rolesService.getRole("user");
+
+    if (!existRole) {
+      existRole = await this.rolesService.createRole("user");
+    }
+
+    return await this.userRepository.create({
+      email: newUser.email,
+      username: newUser.username,
+      password: newUser.password,
+      roleId: existRole.id,
+    });
+  }
+
+  async updateUser(newUserData: UpdateUserDto): Promise<User> {
+    const existUser = await this.userRepository.findOne({
+      where: { email: newUserData.email },
+    });
+
+    if (!existUser) {
+      throw new NotFoundException("User not found");
+    }
+
+    Object.assign(existUser, {
+      email: newUserData.email,
+      username: newUserData.username,
+      password: newUserData.password,
+      roleId: newUserData.roleId,
+    });
+
+    return await existUser.save();
+  }
+
+  async deleteUser(userId: number): Promise<string> {
+    const existUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!existUser) {
+      throw new NotFoundException("User not found");
+    }
+    await existUser.destroy();
+
+    return `${existUser.username} has been deleted!`;
+  }
+
+  async getUser(userId: number): Promise<User> {
+    const existUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!existUser) {
+      throw new NotFoundException("User not found");
+    }
+
+    return existUser;
+  }
 }
 ```
 
-### GrantDTO
+### User Controller
 
-```java
-package db.lab6.dto;
+```typescript
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
+import { UserService } from "./user.service";
+import { CreateUserDto } from "./create-user.dto";
+import { UpdateUserDto } from "./update-user.dto";
 
-import lombok.Data;
+@Controller("user")
+export class UserController {
+  constructor(private userService: UserService) {}
 
-@Data
-public class GrantDTO {
-    private Long roleId;
-    private Long permissionId;
+  @Post("/create")
+  createUser(@Body() newUser: CreateUserDto) {
+    return this.userService.createUser(newUser);
+  }
+
+  @Patch("/update")
+  updateUser(@Body() newUser: UpdateUserDto) {
+    return this.userService.updateUser(newUser);
+  }
+
+  @Delete("/delete/:id")
+  deleteUser(@Param("id") id: string) {
+    return this.userService.deleteUser(+id);
+  }
+
+  @Get(":id")
+  getUser(@Param("id") id: string) {
+    return this.userService.getUser(+id);
+  }
 }
 ```
 
-## Controller
+### User Module
 
-### RoleController
+```typescript
+import { Module } from "@nestjs/common";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { User } from "./user.model";
+import { Role } from "src/roles/roles.model";
+import { RolesModule } from "src/roles/roles.module";
 
-```java
-package db.lab6.controller;
-
-import db.lab6.dto.RoleDTO;
-import db.lab6.entity.Role;
-import db.lab6.service.RoleService;
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@AllArgsConstructor
-@RequestMapping("/role")
-public class RoleController {
-    private RoleService roleService;
-
-    @PostMapping("/add")
-    public Role addRole(@RequestBody RoleDTO roleDTO) {
-        Role role = roleService.addRole(roleDTO);
-        return role;
-    }
-
-    @GetMapping("/get/{id}")
-    public Role getRoleById(@PathVariable Long id) {
-        Role role = roleService.getRoleById(id);
-        return role;
-    }
-
-    @GetMapping("/get/all")
-    public List<Role> getAllRoles() {
-        return roleService.getAllRoles();
-    }
-
-    @PutMapping("/update/{id}")
-    public Role updateRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
-        Role role = roleService.updateRole(id, roleDTO);
-        return role;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteRole(@PathVariable Long id) {
-        roleService.deleteRole(id);
-        return "Role deleted";
-    }
-}
+@Module({
+  imports: [SequelizeModule.forFeature([User]), RolesModule],
+  controllers: [UserController],
+  providers: [UserService],
+})
+export class UserModule {}
 ```
 
-### PermissionController
-
-```java
-package db.lab6.controller;
-
-import db.lab6.dto.PermissionDTO;
-import db.lab6.entity.Permission;
-import db.lab6.service.PermissionService;
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@AllArgsConstructor
-@RequestMapping("/permission")
-public class PermissionController {
-    private PermissionService permissionService;
-
-    @PostMapping("/add")
-    public Permission addRole(@RequestBody PermissionDTO permissionDTO) {
-        Permission permission = permissionService.addPermission(permissionDTO);
-        return permission;
-    }
-
-    @GetMapping("/get/{id}")
-    public Permission getRoleById(@PathVariable Long id) {
-        Permission permission = permissionService.getPermissionById(id);
-        return permission;
-    }
-
-    @GetMapping("/get/all")
-    public List<Permission> getAllPermissions() {
-        return permissionService.getAllPermissions();
-    }
-
-    @PutMapping("/update/{id}")
-    public Permission updateRole(@PathVariable Long id, @RequestBody PermissionDTO permissionDTO) {
-        Permission permission = permissionService.updatePermission(id, permissionDTO);
-        return permission;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteRole(@PathVariable Long id) {
-        permissionService.deletePermission(id);
-        return "Permission deleted";
-    }
-
-}
-```
-
-### GrantController
-
-```java
-package db.lab6.controller;
-
-import db.lab6.dto.GrantDTO;
-import db.lab6.entity.Grant;
-import db.lab6.service.GrantService;
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@AllArgsConstructor
-@RequestMapping("/grant")
-public class GrantController {
-    private GrantService grantService;
-
-    @PostMapping("/add")
-    public Grant addGrant(@RequestBody GrantDTO grantDTO) {
-        Grant grant = grantService.addGrant(grantDTO);
-        return grant;
-    }
-
-    @GetMapping("/get/{id}")
-    public Grant getRoleById(@PathVariable Long id) {
-        Grant grant = grantService.getGrantById(id);
-        return grant;
-    }
-
-    @GetMapping("/get/all")
-    public List<Grant> getAllGrants() {
-        return grantService.getAllGrants();
-    }
-
-    @GetMapping("/get/by_role/{id}")
-    public List<Grant> getGrantsByRoleId(@PathVariable Long id) {
-        return grantService.getGrantsByRoleId(id);
-    }
-
-    @GetMapping("/get/by_permission/{id}")
-    public List<Grant> getGrantByPermissionId(@PathVariable Long id) {
-        return grantService.getGrantsByPermissionId(id);
-    }
-
-    @PutMapping("/update/{id}")
-    public Grant updateGrant(@PathVariable Long id, @RequestBody GrantDTO grantDTO) {
-        Grant grant = grantService.updateGrant(id, grantDTO);
-        return grant;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteGrant(@PathVariable Long id) {
-        grantService.deleteGrant(id);
-        return "Grant deleted";
-    }
-
-}
-```
-
-## Service
-
-### RoleService
-
-```java
-package db.lab6.service;
-
-import db.lab6.dto.RoleDTO;
-import db.lab6.entity.Role;
-import db.lab6.repository.RoleRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@AllArgsConstructor
-public class RoleService {
-    private RoleRepository roleRepository;
-
-    public Role addRole(RoleDTO roleDTO) {
-        Role role = new Role();
-        role.setName(roleDTO.getName());
-        return roleRepository.save(role);
-    }
-
-    public Role getRoleById(Long id) {
-        return roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Role not found"));
-    }
-
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
-    }
-
-    public Role updateRole(Long id, RoleDTO roleDTO) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Role not found"));
-        role.setName(roleDTO.getName());
-        return roleRepository.save(role);
-    }
-
-    public void deleteRole(Long id) {
-        if (roleRepository.existsById(id)) {
-            roleRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("Role not found");
-        }
-    }
-}
-```
-
-### PermissionService
-
-```java
-package db.lab6.service;
-
-import db.lab6.dto.PermissionDTO;
-import db.lab6.entity.Permission;
-import db.lab6.repository.PermissionRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-
-@Service
-@AllArgsConstructor
-public class PermissionService {
-    private PermissionRepository permissionRepository;
-
-    public Permission addPermission(PermissionDTO permissionDTO) {
-        Permission permission = new Permission();
-        permission.setName(permissionDTO.getName());
-        return permissionRepository.save(permission);
-    }
-
-    public Permission getPermissionById(Long id) {
-        return permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Permission not found"));
-    }
-
-    public List<Permission> getAllPermissions() {
-        return permissionRepository.findAll();
-    }
-
-    public Permission updatePermission(Long id, PermissionDTO permissionDTO) {
-        Permission permission = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Permission not found"));
-        permission.setName(permissionDTO.getName());
-        return permissionRepository.save(permission);
-    }
-
-    public void deletePermission(Long id) {
-        if (permissionRepository.existsById(id)) {
-            permissionRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("Permission not found");
-        }
-    }
-}
-```
-### GrantService
-
-```java
-package db.lab6.service;
-
-import db.lab6.dto.GrantDTO;
-import db.lab6.entity.Grant;
-import db.lab6.repository.GrantRepository;
-import db.lab6.repository.PermissionRepository;
-import db.lab6.repository.RoleRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@AllArgsConstructor
-public class GrantService {
-    private GrantRepository grantRepository;
-    private RoleRepository roleRepository;
-    private PermissionRepository permissionRepository;
-
-    public Grant addGrant(GrantDTO grantDTO) {
-        Grant grant = new Grant();
-        grant.setRole(
-                roleRepository.findById(grantDTO.getRoleId()).orElseThrow(() -> new IllegalArgumentException("Role not found"))
-        );
-        grant.setPermission(
-                permissionRepository.findById(grantDTO.getPermissionId()).orElseThrow(() -> new IllegalArgumentException("Permission not found"))
-        );
-        return grantRepository.save(grant);
-    }
-
-    public Grant getGrantById(Long id) {
-        return grantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Grant not found"));
-    }
-
-    public List<Grant> getAllGrants() {
-        return grantRepository.findAll();
-    }
-
-    public void deleteGrant(Long id) {
-        grantRepository.deleteById(id);
-    }
-
-    public Grant updateGrant(Long id, GrantDTO grantDTO) {
-        Grant grant = getGrantById(id);
-        grant.setRole(
-                roleRepository.findById(grantDTO.getRoleId()).orElseThrow(() -> new IllegalArgumentException("Role not found"))
-        );
-        grant.setPermission(
-                permissionRepository.findById(grantDTO.getPermissionId()).orElseThrow(() -> new IllegalArgumentException("Permission not found"))
-        );
-        return grantRepository.save(grant);
-    };
-
-    public List<Grant> getGrantsByRoleId(Long roleId) {
-        return grantRepository.findByRoleId(roleId);
-    }
-
-    public List<Grant> getGrantsByPermissionId(Long permissionId) {
-        return grantRepository.findByPermissionId(permissionId);
-    }
-}
-```
-## Repository
-
-### RoleRepository
-
-```java
-package db.lab6.repository;
-
-import db.lab6.entity.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface RoleRepository extends JpaRepository<Role, Long> { }
-```
-
-### PermissionRepository
-
-```java
-package db.lab6.repository;
-
-import db.lab6.entity.Permission;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface PermissionRepository extends JpaRepository<Permission, Long> { }
-```
-
-### GrantRepository
-
-```java
-package db.lab6.repository;
-
-import db.lab6.entity.Grant;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-
-public interface GrantRepository extends JpaRepository<Grant, Long> {
-    List<Grant> findByRoleId(Long roleId);
-    List<Grant> findByPermissionId(Long permissionId);
-}
-```
-
-## SpringMainClass
-
-```java
-package db.lab6;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class Lab6Application {
-	
-	public static void main(String[] args) {
-		SpringApplication.run(Lab6Application.class, args);
-	}
-}
+### App Module
+
+```typescript
+import { Module } from "@nestjs/common";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { UserModule } from "./user/user.module";
+import { RolesModule } from "./roles/roles.module";
+import { User } from "./user/user.model";
+import { Role } from "./roles/roles.model";
+
+@Module({
+  imports: [
+    SequelizeModule.forRoot({
+      dialect: "postgres",
+      host: "localhost",
+      port: 5432,
+      username: "postgres",
+      password: "root",
+      database: "Lab_6_not_my",
+      models: [User, Role],
+      synchronize: true,
+      autoLoadModels: true,
+    }),
+    UserModule,
+    RolesModule,
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
 ```
